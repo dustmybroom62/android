@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GreetFriend</string>
+    <string-array name="friends">
+        <item>John</item>
+        <item>Paul</item>
+        <item>George</item>
+        <item>Ringo</item>
+    </string-array>
+</resources>

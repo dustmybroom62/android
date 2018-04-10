@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">SharedPreferences</string>
+    <string name="option">Meters to %1$s</string>
+    <string name="actual_units">Actual Units: %1$s</string>
+    <string name="result">Result: %1$s</string>
+</resources>
