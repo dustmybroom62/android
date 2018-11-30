@@ -44,24 +44,24 @@ public class MainActivity extends AppCompatActivity {
         swPower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean on) {
-                if (!hasCameraRights) {
-                    buttonView.setChecked(false);
-                    tv1.setText("Disabled");
-                    showMessage("Not Allowed: Flashlight requires Camera privelege.");
-                    return;
+            if (!hasCameraRights) {
+                buttonView.setChecked(false);
+                tv1.setText("Disabled");
+                showMessage("Not Allowed: Flashlight requires Camera privelege.");
+                return;
+            }
+            if (on) {
+                flashOn = true;
+                swSos.setChecked(false);
+                tv1.setText("On");
+                flashlightOn();
+            } else {
+                flashOn = false;
+                if (!sosOn) {
+                    tv1.setText("Off");
+                    flashlightOff();
                 }
-                if (on) {
-                    flashOn = true;
-                    swSos.setChecked(false);
-                    tv1.setText("On");
-                    flashlightOn();
-                } else {
-                    flashOn = false;
-                    if (!sosOn) {
-                        tv1.setText("Off");
-                        flashlightOff();
-                    }
-                }
+            }
             }
         });
 
@@ -69,23 +69,23 @@ public class MainActivity extends AppCompatActivity {
         swSos.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!hasCameraRights) {
-                    buttonView.setChecked(false);
-                    showMessage("Not Allowed: Flashlight requires Camera privelege.");
-                    return;
+            if (!hasCameraRights) {
+                buttonView.setChecked(false);
+                showMessage("Not Allowed: Flashlight requires Camera privelege.");
+                return;
+            }
+            if (isChecked) {
+                sosOn = true;
+                swPower.setChecked(false);
+                tv1.setText("SOS Mode");
+                sosOn();
+            } else {
+                sosOn = false;
+                if (!flashOn) {
+                    tv1.setText("Off");
+                    flashlightOff();
                 }
-                if (isChecked) {
-                    sosOn = true;
-                    swPower.setChecked(false);
-                    tv1.setText("SOS Mode");
-                    sosOn();
-                } else {
-                    sosOn = false;
-                    if (!flashOn) {
-                        tv1.setText("Off");
-                        flashlightOff();
-                    }
-                }
+            }
             }
         });
         strobeRunner = StrobeRunner.getInstance();
@@ -93,37 +93,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void showMessage(String message) {
         Snackbar.make(coordView, message, Snackbar.LENGTH_SHORT)
-                .show();
+           .show();
     }
 
     protected void sosOn() {
-//        strobeRunner.requestStop = true;
-//        if (null != srThread && srThread.isAlive()) {
-//            srThread.interrupt();
-//        }
-//                    if (srThread.isAlive()) {
-//                        try {
-//                            srThread.wait();
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-        strobeRunner.delayOff = sosGap;
-        strobeRunner.onPattern = sosPattern.clone();
-        if (!strobeRunner.isRunning) {
-            srThread = new Thread(strobeRunner);
-            srThread.start();
+        try {
+            strobeRunner.delayOff = sosGap;
+            strobeRunner.onPattern = sosPattern.clone();
+            if (!strobeRunner.isRunning) {
+                srThread = new Thread(strobeRunner);
+                srThread.start();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(coordView, e.getMessage(), Snackbar.LENGTH_SHORT)
+                    .show();
         }
     }
 
     protected void flashlightOn() {
         try {
-//            strobeRunner.requestStop = true;
-//            if (null != srThread && srThread.isAlive()) {
-//                srThread.interrupt();
-//            }
             strobeRunner.delayOff = 0;
-            strobeRunner.onPattern = new double[] {100};
+            strobeRunner.onPattern = new double[]{100};
             if (!strobeRunner.isRunning) {
                 srThread = new Thread(strobeRunner);
                 srThread.start();
@@ -132,26 +123,17 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             Snackbar.make(coordView, e.getMessage(), Snackbar.LENGTH_SHORT)
-                    .show();
+                .show();
         }
     }
 
     protected void flashlightOff() {
         try {
             strobeRunner.requestStop = true;
-//            if (null == camera) {
-//                camera = Camera.open();
-//            }
-//            Camera.Parameters parameters = camera.getParameters();
-//            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-//            camera.setParameters(parameters);
-//            camera.stopPreview();
-//            camera.release();
-//            camera = null;
         } catch (Exception e) {
             e.printStackTrace();
             Snackbar.make(coordView, e.getMessage(), Snackbar.LENGTH_SHORT)
-                    .show();
+                .show();
         }
     }
 
@@ -159,15 +141,16 @@ public class MainActivity extends AppCompatActivity {
         final Activity activity = this;
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
             Snackbar.make(coordView, "Camera access is required for Flashlight.",
-                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                @Override public void onClick(View view) {
-                    ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
+                Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
                 }
             }).show();
-        } else{
+        } else {
             Snackbar.make(coordView, "Requesting camera permission.",
-                    Snackbar.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
+                Snackbar.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_PERMISSION_REQUEST_CAMERA);
         }
 
 
@@ -175,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                                     @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults) {
         if (requestCode != MY_PERMISSION_REQUEST_CAMERA) {
             return;
         }
@@ -210,15 +193,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
- //        if (null != camera) {
-//            camera.release();
-//        }
-
-        super.onStop();
-    }
-
-    @Override
     protected void onDestroy() {
         strobeRunner.requestStop = true;
         swSos.setChecked(false);
@@ -227,16 +201,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-//    protected void onPower(View v) {
-//        Switch p = (Switch) v;
-//        //Toast t = new Toast(this );
-//        if ( p.isChecked() ) {
-//            //t.setText("Power On");
-//            tv1.setText("On");
-//        } else {
-//            //t.setText("Power Off");
-//            tv1.setText("Off");
-//        }
-//        //t.show();
-//    }
 }
